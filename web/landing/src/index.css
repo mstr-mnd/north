@@ -1,0 +1,781 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
+
+/* ─────────────────────────── Токены ─────────────────────────── */
+
+:root {
+  --bg: #f5f3e8;
+  --bg-deep: #ece9dc;
+  --surface: rgba(255, 255, 240, 0.86);
+  --surface-3: #f0eee1;
+  --surface-4: #e6e3d4;
+
+  --border: #dedac9;
+  --border-soft: #e8e5d7;
+
+  --text: #1b1b18;
+  --text-2: #45443d;
+  --text-mute: #6f6e64;
+  --text-faint: #94938a;
+
+  --accent-ring: rgba(72, 148, 178, 0.22);
+  --danger: #b0453b;
+  --ok: #2e7a53;
+
+  --radius-sm: 10px;
+  --radius-lg: 18px;
+  --radius-xl: 22px;
+
+  color-scheme: light;
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─────────────────────────── Каркас ─────────────────────────── */
+
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.page::before {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  content: "";
+  pointer-events: none;
+  background:
+    radial-gradient(880px 520px at 50% -14%, rgba(206, 178, 96, 0.18), transparent 68%),
+    radial-gradient(720px 440px at 86% 4%, rgba(255, 255, 255, 0.55), transparent 70%);
+}
+
+.page > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─────────────────────────── Шапка ──────────────────────────── */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-height: 88px;
+  padding: 20px clamp(20px, 3.2vw, 56px);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 240, 0.86);
+  backdrop-filter: blur(14px);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: fit-content;
+}
+
+.brand-icon {
+  display: block;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dedac9;
+  border-radius: 10px;
+  background: #fdfcf3;
+  object-fit: cover;
+  box-shadow:
+    0 1px 2px rgba(74, 64, 26, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+}
+
+/* Шестерёнка — единственный элемент управления в шапке */
+.gear-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #ddd9c9;
+  border-radius: 15px;
+  color: var(--text-2);
+  background: #f0eee1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.gear-button svg {
+  width: 19px;
+  height: 19px;
+  stroke-width: 1.8;
+  transition: transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gear-button:hover {
+  border-color: #c9c4ad;
+  color: var(--text);
+  background: #e6e3d4;
+}
+
+.gear-button:hover svg {
+  transform: rotate(72deg);
+}
+
+.gear-button:focus-visible {
+  border-color: #b9b3a0;
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.gear-button:active {
+  background: #ddd9c7;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Окно настроек профиля
+   ══════════════════════════════════════════════════════════════ */
+
+.settings-dialog {
+  display: flex !important;
+  flex-direction: column;
+  /* Высота фиксирована намеренно. Иначе при переключении вкладок окно меняет
+     размер, а так как оно центрировано по вертикали — вместе с ним уезжает и
+     шапка. Плашка активной вкладки анимируется по layout, подхватывает этот
+     сдвиг и едет по диагонали вместо горизонтали. */
+  height: min(90vh, 568px);
+  max-width: 664px !important;
+  overflow: hidden;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-xl) !important;
+  color: var(--text);
+  background: var(--surface) !important;
+  backdrop-filter: blur(18px) saturate(150%) !important;
+  box-shadow:
+    0 42px 120px rgba(74, 64, 26, 0.24),
+    0 2px 10px rgba(74, 64, 26, 0.12) !important;
+}
+
+.settings-dialog > button {
+  top: 22px !important;
+  right: 22px !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #ddd9c9;
+  border-radius: var(--radius-sm);
+  color: var(--text-mute);
+  background: #f2f0e3;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.settings-dialog > button:hover {
+  border-color: #c9c4ad;
+  color: var(--text);
+  background: #e8e5d6;
+}
+
+.settings-dialog > button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ── Шапка окна ── */
+
+.settings-head {
+  flex: 0 0 auto;
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid var(--border-soft);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 246, 0.72) 0%,
+    rgba(248, 246, 234, 0.5) 100%
+  );
+}
+
+.settings-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-right: 44px;
+}
+
+.settings-avatar {
+  flex: 0 0 auto;
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 16px !important;
+  background: #eae6d5 !important;
+  font-size: 17px !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 0 0 1px rgba(120, 110, 70, 0.12) !important;
+}
+
+/* Инициалы внутри аватара: у библиотеки они белые, на светлом фоне это невидимо */
+.settings-avatar span {
+  color: var(--text) !important;
+}
+
+.settings-identity-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.settings-name {
+  margin: 0 !important;
+  overflow: hidden;
+  color: var(--text) !important;
+  font-family: inherit !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.03em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-email {
+  margin: 3px 0 0 !important;
+  overflow: hidden;
+  color: var(--text-mute) !important;
+  font-family: inherit !important;
+  font-size: 12.5px !important;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Тело окна и вкладки ── */
+
+.settings-body {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  padding: 18px 24px 0;
+}
+
+.settings-tabs-root {
+  display: flex !important;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.settings-tabs {
+  display: flex !important;
+  flex: 0 0 auto;
+  width: 100%;
+  height: 42px !important;
+  padding: 4px !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 13px !important;
+  background: var(--bg-deep) !important;
+}
+
+.settings-tabs > button {
+  flex: 1;
+  height: 32px;
+  padding: 0 10px !important;
+  border-radius: 9px !important;
+  color: var(--text-mute) !important;
+  font-family: inherit !important;
+  font-size: 12.5px !important;
+  font-weight: 550 !important;
+  letter-spacing: -0.01em;
+  transition: color 180ms ease;
+}
+
+.settings-tabs > button[aria-selected="true"] {
+  color: var(--text) !important;
+}
+
+.settings-tabs > button > span {
+  gap: 7px !important;
+  color: inherit !important;
+}
+
+.settings-tabs > button[aria-selected="true"] > span:first-child {
+  background: #fffdf4 !important;
+  box-shadow:
+    0 1px 2px rgba(74, 64, 26, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+
+.settings-panes {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 18px 2px 22px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #cdc8b3 transparent;
+  scrollbar-width: thin;
+}
+
+.settings-panes::-webkit-scrollbar {
+  width: 8px;
+}
+
+.settings-panes::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 99px;
+  background: #cdc8b3;
+  background-clip: content-box;
+}
+
+.settings-pane {
+  display: flex !important;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 0 !important;
+}
+
+.settings-form {
+  display: grid;
+  gap: 14px;
+}
+
+.settings-form > .settings-card-title {
+  margin-bottom: 0;
+}
+
+.settings-card-title {
+  margin: 0 0 12px;
+  color: var(--text-mute);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+/* ── Информация профиля ── */
+
+.settings-card {
+  padding: 16px 16px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 15px;
+  background: rgba(255, 255, 250, 0.7);
+}
+
+.info-list {
+  margin: 0;
+  padding: 0;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-top: 1px solid #e9e6d7;
+}
+
+.info-row:first-child {
+  border-top: 0;
+}
+
+.info-row dt {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-mute);
+  font-size: 12px;
+}
+
+.info-row dd {
+  margin: 0;
+  overflow: hidden;
+  color: #2a2a25;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.info-icon {
+  width: 14px;
+  height: 14px;
+  color: #9d9b8e;
+}
+
+/* Скрытый по умолчанию email + кнопка показать */
+
+.info-row dd.info-value {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.info-email {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.reveal-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-faint);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.reveal-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.reveal-button:hover {
+  border-color: #ddd9c9;
+  color: var(--text-2);
+  background: #f0eee1;
+}
+
+.reveal-button:focus-visible {
+  border-color: #b9b3a0;
+  color: var(--text);
+  outline: none;
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+/* Статус подписки */
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 10px 3px 8px;
+  border: 1px solid #ddd9c9;
+  border-radius: 999px;
+  color: var(--text-2);
+  background: #f2f0e3;
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #a8a695;
+}
+
+.status-pill.on {
+  border-color: #b9dcc8;
+  color: var(--ok);
+  background: #e9f5ed;
+}
+
+.status-pill.on .status-dot {
+  background: var(--ok);
+  box-shadow: 0 0 0 3px rgba(46, 122, 83, 0.14);
+}
+
+.status-pill.off {
+  border-color: #e8cdc9;
+  color: var(--danger);
+  background: #fbefed;
+}
+
+.status-pill.off .status-dot {
+  background: #c07068;
+}
+
+/* ── Поля ── */
+
+.field {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  color: var(--text-mute);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field input {
+  height: 46px !important;
+  border: 1px solid #ddd9c9 !important;
+  border-radius: 12px !important;
+  color: var(--text) !important;
+  background: #fffef6 !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.field input:hover {
+  background: #fbf9ef !important;
+}
+
+.field input:focus {
+  border-color: #b9b3a0 !important;
+  outline: none !important;
+  background: #fffefa !important;
+  box-shadow: 0 0 0 3px var(--accent-ring) !important;
+}
+
+.field input::placeholder {
+  color: #a9a79a !important;
+}
+
+.field > div > span:first-child {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #a09e90 !important;
+}
+
+.field-icon {
+  width: 15px;
+  height: 15px;
+}
+
+.pane-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Подвал окна ── */
+
+.settings-foot {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-soft);
+  background: rgba(250, 248, 238, 0.66);
+}
+
+.settings-foot-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logout-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 4px;
+  border: 0;
+  color: var(--text-mute);
+  background: transparent;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.logout-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.logout-button:hover {
+  color: var(--danger);
+}
+
+.settings-status {
+  color: var(--ok);
+  font-size: 11.5px;
+}
+
+.settings-status.error {
+  color: var(--danger);
+}
+
+.settings-status.muted {
+  color: var(--text-faint);
+}
+
+.settings-save,
+.settings-cancel {
+  height: 40px !important;
+  padding: 0 18px !important;
+  border-radius: 12px !important;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+}
+
+.settings-save {
+  border: 1px solid #d8d3bf !important;
+  color: var(--text) !important;
+  background: #ece9da !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+.settings-save:hover:not(:disabled) {
+  border-color: #c6c0a8 !important;
+  background: #e3dfcc !important;
+}
+
+.settings-cancel {
+  border: 1px solid transparent !important;
+  color: var(--text-mute) !important;
+  background: transparent !important;
+}
+
+.settings-cancel:hover {
+  color: var(--text) !important;
+  background: #eae7d8 !important;
+}
+
+/* ──────────────────────── Адаптивность ─────────────────────── */
+
+@media (max-width: 680px) {
+  .header {
+    min-height: 76px;
+    padding-block: 14px;
+  }
+
+  .settings-dialog {
+    height: min(92vh, 568px);
+    border-radius: var(--radius-lg) !important;
+  }
+
+  .settings-head {
+    padding: 20px 18px 16px;
+  }
+
+  .settings-identity {
+    gap: 12px;
+    padding-right: 38px;
+  }
+
+  .settings-avatar {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 14px !important;
+    font-size: 15px !important;
+  }
+
+  .settings-body {
+    padding: 16px 18px 0;
+  }
+
+  .settings-tabs > button {
+    padding: 0 6px !important;
+    font-size: 11.5px !important;
+  }
+
+  .settings-tabs > button > span {
+    gap: 5px !important;
+  }
+
+  .field-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .settings-foot {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    padding: 14px 18px;
+  }
+
+  .settings-foot-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .logout-button {
+    align-self: flex-start;
+  }
+
+  .settings-status {
+    width: 100%;
+    text-align: right;
+  }
+}
+
+@media (max-width: 420px) {
+  .settings-tabs > button {
+    font-size: 11px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

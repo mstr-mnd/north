@@ -1,0 +1,6 @@
+.env
+
+web/landing/node_modules/
+web/landing/dist/
+
+.DS_Store
